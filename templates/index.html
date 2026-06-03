@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expense Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    header {
+      background: #2d6a4f;
+      color: white;
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #2d6a4f;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2d6a4f;
+    }
+
+    .full-width { grid-column: span 2; }
+
+    button {
+      padding: 10px 24px;
+      background: #2d6a4f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #1b4332; }
+
+    .btn-delete {
+      background: #e63946;
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .btn-delete:hover { background: #c1121f; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-bottom: 2px solid #eee;
+      color: #555;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tr:hover td { background: #f9f9f9; }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: #d8f3dc;
+      color: #2d6a4f;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .summary-box {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .summary-box .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2d6a4f;
+    }
+
+    .summary-box .label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .month-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .month-controls input {
+      width: auto;
+    }
+
+    .empty {
+      text-align: center;
+      color: #aaa;
+      padding: 30px;
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #2d6a4f;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<header>💰 Expense Tracker</header>
+
+<div class="container">
+
+  <!-- Add Expense -->
+  <div class="card">
+    <h2>Add Expense</h2>
+    <div class="form-grid">
+      <input type="text"   id="title"       placeholder="Title (e.g. Lunch)" />
+      <input type="number" id="amount"      placeholder="Amount (₹)" step="0.01"/>
+      <select id="category">
+        <option value="food">Food</option>
+        <option value="transport">Transport</option>
+        <option value="health">Health</option>
+        <option value="shopping">Shopping</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="general">General</option>
+      </select>
+      <input type="date" id="date"/>
+      <input type="text" id="description" placeholder="Description (optional)" class="full-width"/>
+      <div class="full-width">
+        <button onclick="addExpense()">+ Add Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Summary -->
+  <div class="card">
+    <h2>Monthly Summary</h2>
+    <div class="month-controls">
+      <input type="number" id="sum-year"  placeholder="Year"  value="2025" style="width:100px"/>
+      <input type="number" id="sum-month" placeholder="Month" value="6"    style="width:80px"/>
+      <button onclick="loadSummary()">View</button>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="value" id="sum-total">₹0</div>
+        <div class="label">Total Spent</div>
+      </div>
+      <div class="summary-box">
+        <div class="value" id="sum-count">0</div>
+        <div class="label">Expenses</div>
+      </div>
+      <div class="summary-box">
+        <div class="value" id="sum-top">—</div>
+        <div class="label">Top Category</div>
+      </div>
+    </div>
+    <div id="category-breakdown"></div>
+  </div>
+
+  <!-- Expenses Table -->
+  <div class="card">
+    <h2>All Expenses</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="expense-table">
+        <tr><td colspan="5" class="empty">No expenses yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Set today's date as default
+  document.getElementById('date').valueAsDate = new Date();
+
+  async function addExpense() {
+    const title    = document.getElementById('title').value.trim();
+    const amount   = document.getElementById('amount').value;
+    const category = document.getElementById('category').value;
+    const date     = document.getElementById('date').value;
+    const description = document.getElementById('description').value.trim();
+
+    if (!title || !amount) {
+      showToast('Title and amount are required!', true);
+      return;
+    }
+
+    const res = await fetch('/expenses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, amount: parseFloat(amount), category, date, description })
+    });
+
+    if (res.ok) {
+      showToast('Expense added!');
+      document.getElementById('title').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('description').value = '';
+      loadExpenses();
+    }
+  }
+
+  async function loadExpenses() {
+    const res  = await fetch('/expenses');
+    const data = await res.json();
+    const tbody = document.getElementById('expense-table');
+
+    if (data.count === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">No expenses yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.expenses.map(e => `
+      <tr>
+        <td>${e.date}</td>
+        <td>${e.title}</td>
+        <td><span class="badge">${e.category}</span></td>
+        <td>₹${e.amount.toFixed(2)}</td>
+        <td><button class="btn-delete" onclick="deleteExpense(${e.id})">Delete</button></td>
+      </tr>
+    `).join('');
+  }
+
+  async function deleteExpense(id) {
+    const res = await fetch(`/expenses/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      showToast('Expense deleted!');
+      loadExpenses();
+    }
+  }
+
+  async function loadSummary() {
+    const year  = document.getElementById('sum-year').value;
+    const month = document.getElementById('sum-month').value;
+    const res   = await fetch(`/expenses/summary/${year}/${month}`);
+    const data  = await res.json();
+
+    document.getElementById('sum-total').textContent = `₹${data.total}`;
+    document.getElementById('sum-count').textContent = data.count;
+
+    const cats = data.by_category;
+    const top  = Object.keys(cats).sort((a,b) => cats[b]-cats[a])[0];
+    document.getElementById('sum-top').textContent = top || '—';
+
+    const breakdown = document.getElementById('category-breakdown');
+    breakdown.innerHTML = Object.entries(cats).map(([cat, amt]) => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:14px">
+        <span><span class="badge">${cat}</span></span>
+        <span style="font-weight:500">₹${amt}</span>
+      </div>
+    `).join('');
+  }
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.background = isError ? '#e63946' : '#2d6a4f';
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+
+  loadExpenses();
+</script>
+</body>
+</html>
