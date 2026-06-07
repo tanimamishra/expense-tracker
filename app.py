@@ -103,7 +103,15 @@ def monthly_summary(year, month):
 def index():
     return render_template('index.html')
 
+import time
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    while True:
+        try:
+            with app.app_context():
+                db.create_all()
+            break
+        except Exception as e:
+            print(f"DB not ready, retrying in 3 seconds... {e}")
+            time.sleep(3)
     app.run(host='0.0.0.0', port=5000, debug=True)
