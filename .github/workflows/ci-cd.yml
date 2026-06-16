@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker:latest
+          tags: tanimamishra/expense-tracker:latest
