@@ -75,6 +75,22 @@ def get_expenses():
     expenses = query.all()
     return jsonify({'expenses': [e.to_dict() for e in expenses], 'count': len(expenses)}), 200
 
+@app.route('/expenses/<int:expense_id>', methods=['PUT'])
+def update_expense(expense_id):
+    expense = Expense.query.get_or_404(expense_id)
+    data = request.get_json()
+    if data.get('title'):
+        expense.title = data['title']
+    if data.get('amount'):
+        expense.amount = float(data['amount'])
+    if data.get('category'):
+        expense.category = data['category']
+    if data.get('description'):
+        expense.description = data['description']
+    if data.get('date'):
+        expense.date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+    db.session.commit()
+    return jsonify(expense.to_dict()), 200
 
 @app.route('/expenses/<int:expense_id>', methods=['DELETE'])
 def delete_expense(expense_id):
