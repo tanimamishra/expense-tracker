@@ -1,4 +1,4 @@
-# 💰 Expense Tracker
+# Expense Tracker
 
 A DevOps project built on a Flask expense tracking application.
 
