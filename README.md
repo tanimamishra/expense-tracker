@@ -40,7 +40,7 @@ docker-compose up --build
 | 1 | Flask + PostgreSQL app | ✅ Done |
 | 2 | Docker + docker-compose | ✅ Done |
 | 3 | GitHub + branch protection | ✅ Done |
-| 4 | CI/CD with GitHub Actions | 🔄 Next |
+| 4 | CI/CD with GitHub Actions | ✅ Done |
 | 5 | AWS EC2 deployment | ⬜ Pending |
 | 6 | Terraform | ⬜ Pending |
 | 7 | Kubernetes | ⬜ Pending |
