@@ -1,6 +1,6 @@
 # 💰 Expense Tracker
 
-A production-grade DevOps project built on a Flask expense tracking application.
+A DevOps project built on a Flask expense tracking application.
 
 ## Tech Stack
 - **Backend** — Python / Flask
