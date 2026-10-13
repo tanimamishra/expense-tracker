@@ -11,6 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   web:
+    container_name: expense-tracker-app
     build: .
     ports:
       - "5000:5000"
