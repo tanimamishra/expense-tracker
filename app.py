@@ -39,7 +39,12 @@ class Expense(db.Model):
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'ok'}), 200
+    return jsonify({
+        'status': 'ok',
+        'version': '1.0.0',
+        'author': 'Tanima Mishra',
+        'project': 'Expense Tracker - DevOps Portfolio'
+    }), 200
 
 
 @app.route('/expenses', methods=['POST'])
